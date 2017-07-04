@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Either",
+        "repositoryURL": "https://github.com/pointfreeco/swift-either.git",
+        "state": {
+          "branch": "master",
+          "revision": "4401e0876fabe606b39dbb29cebcf89e787a8c19",
+          "version": null
+        }
+      },
+      {
+        "package": "Prelude",
+        "repositoryURL": "https://github.com/pointfreeco/swift-prelude.git",
+        "state": {
+          "branch": "9d95d3c",
+          "revision": "9d95d3ce4ef98d3e2c369614f7f672790e6c442a",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
