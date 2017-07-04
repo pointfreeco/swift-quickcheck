@@ -1,4 +1,5 @@
 import Prelude
+import Either
 import LCG
 import NonEmpty
 
@@ -125,6 +126,10 @@ public func perturbGen<A>(_ by: Double) -> (Gen<A>) -> Gen<A> {
   }
 }
 
+public func choose<A>(_ a1: Gen<A>, _ a2: Gen<A>) -> Gen<A> {
+  return genBool.flatMap { $0 ? a1 : a2 }
+}
+
 public let genBool = uniform.map { $0 < 0.5 }
 
 public let genUnicodeScalar =
@@ -151,4 +156,8 @@ public func optionalOf<A>(_ gen: Gen<A>) -> Gen<A?> {
 
 public func tupleOf<A, B>(_ a: Gen<A>, _ b: Gen<B>) -> Gen<(A, B)> {
   return { a in { b in (a, b) } } <¢> a <*> b
+}
+
+public func eitherOf<L, R>(_ l: Gen<L>, or r: Gen<R>) -> Gen<Either<L, R>> {
+  return choose(l.map(Either.left), r.map(Either.right))
 }
