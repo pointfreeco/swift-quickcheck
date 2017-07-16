@@ -1,5 +1,5 @@
 import XCTest
 import Prelude
 
-class ChoiceTests: XCTestCase {
+class QuickCheckTests: XCTestCase {
 }
