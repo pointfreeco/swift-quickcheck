@@ -10,8 +10,7 @@ let package = Package(
     .library(name: "NonEmpty", targets: ["NonEmpty"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("9d95d3c")),
-    .package(url: "https://github.com/pointfreeco/swift-either.git", .branch("master")),
+    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .branch("master")),
   ],
   targets: [
     .target(
