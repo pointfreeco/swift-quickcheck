@@ -1,4 +1,3 @@
-import Prelude
 import QuickCheck
 
 struct User: Decodable {

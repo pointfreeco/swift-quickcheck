@@ -1,4 +1,3 @@
-import Foundation
 import LCG
 import Prelude
 
@@ -46,7 +45,7 @@ private final class ArbitraryDecoder: Decoder {
     let decoder: ArbitraryDecoder
 
     init(decoder: ArbitraryDecoder) {
-      let genKeys = arrayOf(genInt.map(Key.init(intValue:))) |> scale { $0 * 2 }
+      let genKeys = array(of: genInt.map(Key.init(intValue:))) |> scale { $0 * 2 }
 
       self.allKeys = decoder.run(genKeys).flatMap { $0 }
       self.codingPath = decoder.codingPath
