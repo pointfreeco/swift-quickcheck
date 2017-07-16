@@ -45,6 +45,12 @@ public func resize<A>(_ size: Int) -> (Gen<A>) -> Gen<A> {
   }
 }
 
+public func scale<A>(_ f: @escaping (Int) -> Int) -> (Gen<A>) -> Gen<A> {
+  return { gen in
+    sized { $0 |> f >>> resize <| gen }
+  }
+}
+
 public func choose(_ range: Range<Double>) -> Gen<Double> {
   return uniform.map { (range.upperBound - range.lowerBound) * $0 + range.lowerBound }
 }
