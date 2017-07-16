@@ -2,16 +2,16 @@ import Foundation
 import LCG
 import Prelude
 
-let genInt8 = choose(Int(Int8.min)..<Int(Int8.max)).map(Int8.init)
-let genInt16 = choose(Int(Int16.min)..<Int(Int16.max)).map(Int16.init)
-let genInt32 = genInt.map(Int32.init)
-let genInt64 = genInt.map(Int64.init)
-let genUInt = choose(0..<2_000_000).map(UInt.init)
-let genUInt8 = choose(0..<Int(UInt8.max)).map(UInt8.init)
-let genUInt16 = choose(0..<Int(UInt16.max)).map(UInt16.init)
-let genUInt32 = choose(0..<2_000_000).map(UInt32.init)
-let genUInt64 = choose(0..<2_000_000).map(UInt64.init)
-let genFloat = genDouble.map(Float.init)
+private let genInt8 = choose(Int(Int8.min)..<Int(Int8.max)).map(Int8.init)
+private let genInt16 = choose(Int(Int16.min)..<Int(Int16.max)).map(Int16.init)
+private let genInt32 = genInt.map(Int32.init)
+private let genInt64 = genInt.map(Int64.init)
+private let genUInt = choose(0..<2_000_000).map(UInt.init)
+private let genUInt8 = choose(0..<Int(UInt8.max)).map(UInt8.init)
+private let genUInt16 = choose(0..<Int(UInt16.max)).map(UInt16.init)
+private let genUInt32 = choose(0..<2_000_000).map(UInt32.init)
+private let genUInt64 = choose(0..<2_000_000).map(UInt64.init)
+private let genFloat = genDouble.map(Float.init)
 
 private final class ArbitraryDecoder: Decoder {
   var genState: GenState
@@ -46,9 +46,7 @@ private final class ArbitraryDecoder: Decoder {
     let decoder: ArbitraryDecoder
 
     init(decoder: ArbitraryDecoder) {
-      let genKeys = arrayOf(genInt.map(Key.init(intValue:)))
-        |> scale { $0 * 2 }
-        |> suchThat <| { $0.count % 2 == 0 }
+      let genKeys = arrayOf(genInt.map(Key.init(intValue:))) |> scale { $0 * 2 }
 
       self.allKeys = decoder.run(genKeys).flatMap { $0 }
       self.codingPath = decoder.codingPath
