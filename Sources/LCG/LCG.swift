@@ -11,12 +11,18 @@ public struct Seed {
   
   public let seed: Int
   
-  public init(_ seed: Int) {
+  public init(seed: Int) {
     self.seed = (ensureBetween(Seed.min..<Seed.max) <| seed)
   }
   
-  public static func random() -> IO<Seed> {
-    return IO { Seed(Int(arc4random_uniform(UInt32(N)))) }
+  public static let random = IO {
+    (Seed.init(seed:) <<< Int.init <<< arc4random_uniform <<< UInt32.init) <| N
+  }
+}
+
+extension Seed: ExpressibleByIntegerLiteral {
+  public init(integerLiteral value: Int) {
+    self.init(seed: value)
   }
 }
 
@@ -28,7 +34,7 @@ public func perturb(_ d: Double) -> (Seed) -> (Seed) {
   func go(_ n: Int) -> Int {
     return Int((Double(M) * Double(n) + d).truncatingRemainder(dividingBy: Double(N)))
   }
-  return Seed.init <<< go <<< get(\.seed)
+  return Seed.init(seed:) <<< go <<< get(\.seed)
 }
 
 private func ensureBetween(_ range: Range<Int>) -> (Int) -> Int {
