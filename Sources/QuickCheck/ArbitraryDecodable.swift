@@ -1,16 +1,16 @@
 import LCG
 import Prelude
 
-private let genInt8 = choose(Int(Int8.min)..<Int(Int8.max)).map(Int8.init)
-private let genInt16 = choose(Int(Int16.min)..<Int(Int16.max)).map(Int16.init)
-private let genInt32 = genInt.map(Int32.init)
-private let genInt64 = genInt.map(Int64.init)
-private let genUInt = choose(0..<2_000_000).map(UInt.init)
-private let genUInt8 = choose(0..<Int(UInt8.max)).map(UInt8.init)
-private let genUInt16 = choose(0..<Int(UInt16.max)).map(UInt16.init)
-private let genUInt32 = choose(0..<2_000_000).map(UInt32.init)
-private let genUInt64 = choose(0..<2_000_000).map(UInt64.init)
-private let genFloat = genDouble.map(Float.init)
+private let genInt8 = Int8.init <¢> choose(Int(Int8.min)..<Int(Int8.max))
+private let genInt16 = Int16.init <¢> choose(Int(Int16.min)..<Int(Int16.max))
+private let genInt32 = Int32.init <¢> genInt
+private let genInt64 = Int64.init <¢> genInt
+private let genUInt = UInt.init <¢> choose(0..<2_000_000)
+private let genUInt8 = UInt8.init <¢> choose(0..<Int(UInt8.max))
+private let genUInt16 = UInt16.init <¢> choose(0..<Int(UInt16.max))
+private let genUInt32 = UInt32.init <¢> choose(0..<2_000_000)
+private let genUInt64 = UInt64.init <¢> choose(0..<2_000_000)
+private let genFloat = Float.init <¢> genDouble
 
 private final class ArbitraryDecoder: Decoder {
   var genState: GenState
@@ -45,9 +45,9 @@ private final class ArbitraryDecoder: Decoder {
     let decoder: ArbitraryDecoder
 
     init(decoder: ArbitraryDecoder) {
-      let genKeys = array(of: genInt.map(Key.init(intValue:))) |> scale { $0 * 2 }
+      let genKeys = array(of: Key.init(intValue:) <¢> genInt) |> scale { $0 * 2 }
 
-      self.allKeys = decoder.run(genKeys).flatMap { $0 }
+      self.allKeys = decoder.run(genKeys).flatMap(id)
       self.codingPath = decoder.codingPath
       self.decoder = decoder
     }
@@ -99,7 +99,6 @@ private final class ArbitraryDecoder: Decoder {
 
     init(decoder: ArbitraryDecoder) {
       self.codingPath = decoder.codingPath
-      print(decoder.genState.size)
       self.count = decoder.run(choose(0..<decoder.genState.size) |> suchThat <| { $0 % 2 == 0 })
       self.decoder = decoder
     }
@@ -199,6 +198,23 @@ private final class ArbitraryDecoder: Decoder {
     func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
       return try T(from: self.decoder)
     }
+  }
+}
+
+extension KeyedDecodingContainer {
+  public func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Arbitrary {
+    let decoder = try! self.superDecoder() as! ArbitraryDecoder
+    return decoder.run(T.gen)
+  }
+}
+
+public protocol Arbitrary: Decodable {
+  static var gen: Gen<Self> { get }
+}
+
+extension Arbitrary {
+  public static func arbitrary(seed: Seed = Seed.random.perform(), size: Int = 10) -> Self {
+    return Self.gen.eval((seed, size))
   }
 }
 
