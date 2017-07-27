@@ -10,13 +10,12 @@ let package = Package(
     .library(name: "NonEmpty", targets: ["NonEmpty"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("9d95d3c")),
-    .package(url: "https://github.com/pointfreeco/swift-either.git", .branch("master")),
+    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("3c4f6c9")),
   ],
   targets: [
     .target(
       name: "QuickCheck",
-      dependencies: ["Prelude", "LCG", "Either", "NonEmpty"]),
+      dependencies: ["Either", "LCG", "NonEmpty", "Prelude", "State"]),
     .target(
       name: "LCG",
       dependencies: ["Prelude"]),
