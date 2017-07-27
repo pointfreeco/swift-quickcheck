@@ -7,10 +7,9 @@ let package = Package(
   products: [
     .library(name: "QuickCheck", targets: ["QuickCheck"]),
     .library(name: "LCG", targets: ["LCG"]),
-    .library(name: "NonEmpty", targets: ["NonEmpty"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("3c4f6c9")),
+    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("2778d80")),
   ],
   targets: [
     .target(
@@ -18,9 +17,6 @@ let package = Package(
       dependencies: ["Either", "LCG", "NonEmpty", "Prelude", "State"]),
     .target(
       name: "LCG",
-      dependencies: ["Prelude"]),
-    .target(
-      name: "NonEmpty",
       dependencies: ["Prelude"]),
     .testTarget(
       name: "QuickCheckTests",

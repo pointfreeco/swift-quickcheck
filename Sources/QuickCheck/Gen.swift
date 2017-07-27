@@ -62,7 +62,7 @@ public func choose(_ range: CountableRange<Int>) -> Gen<Int> {
   return (Int.init <<< { $0.rounded(.down) } <<< clamp) <¢> choose32BitPosNumber
 }
 
-public func oneOf<A>(_ xs: NonEmpty<[Gen<A>]>) -> Gen<A> {
+public func oneOf<A>(_ xs: NonEmptyArray<Gen<A>>) -> Gen<A> {
   let (head, tail) = xs |> uncons
   return choose(0..<tail.endIndex) >>- { $0 == 0 ? head : tail[$0 - 1] }
 }
@@ -74,7 +74,7 @@ public func arrayOf<A>(_ gen: Gen<A>) -> Gen<[A]> {
   }
 }
 
-public func arrayOf1<A>(_ gen: Gen<A>) -> Gen<NonEmpty<[A]>> {
+public func arrayOf1<A>(_ gen: Gen<A>) -> Gen<NonEmptyArray<A>> {
   return sized { n in
     choose(0..<n)
       .flatMap { k in
@@ -104,7 +104,7 @@ public func vectorOf<A>(_ size: Int) -> (Gen<A>) -> Gen<[A]> {
   }
 }
 
-public func elements<A>(_ xs: NonEmpty<[A]>) -> Gen<A> {
+public func elements<A>(_ xs: NonEmptyArray<A>) -> Gen<A> {
   let (head, tail) = xs |> uncons
   return choose(0..<tail.endIndex)
     .map { $0 == 0 ? head : tail[$0 - 1] }
