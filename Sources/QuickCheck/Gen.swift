@@ -2,6 +2,7 @@ import Prelude
 import Either
 import LCG
 import NonEmpty
+import State
 
 public typealias GenState = (newSeed: Seed, size: Int)
 public typealias Gen<A> = State<GenState, A>
