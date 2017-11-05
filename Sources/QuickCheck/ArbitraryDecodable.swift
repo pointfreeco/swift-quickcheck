@@ -100,7 +100,7 @@ private final class ArbitraryDecoder: Decoder {
 
     init(decoder: ArbitraryDecoder) {
       self.codingPath = decoder.codingPath
-      self.count = decoder.run(choose(0..<decoder.genState.size) |> suchThat <| { $0 % 2 == 0 })
+      self.count = decoder.run(suchThat(choose(0..<decoder.genState.size))({ $0 % 2 == 0 }))
       self.decoder = decoder
     }
 

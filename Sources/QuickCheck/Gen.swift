@@ -48,7 +48,7 @@ public func resize<A>(_ size: Int) -> (Gen<A>) -> Gen<A> {
 
 public func scale<A>(_ f: @escaping (Int) -> Int) -> (Gen<A>) -> Gen<A> {
   return { gen in
-    sized { $0 |> f >>> resize <| gen }
+    sized { (f >>> resize)($0)(gen) }
   }
 }
 
