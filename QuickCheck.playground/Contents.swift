@@ -1,4 +1,10 @@
-import Prelude
-import LCG
-import NonEmpty
 import QuickCheck
+
+struct User: Decodable {
+  let id: Int
+  let name: String
+}
+
+dump(
+  User.arbitrary()
+)

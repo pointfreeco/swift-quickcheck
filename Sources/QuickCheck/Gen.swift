@@ -46,6 +46,12 @@ public func resize<A>(_ size: Int) -> (Gen<A>) -> Gen<A> {
   }
 }
 
+public func scale<A>(_ f: @escaping (Int) -> Int) -> (Gen<A>) -> Gen<A> {
+  return { gen in
+    sized { (f >>> resize)($0)(gen) }
+  }
+}
+
 public func choose(_ range: Range<Double>) -> Gen<Double> {
   return uniform.map { (range.upperBound - range.lowerBound) * $0 + range.lowerBound }
 }
@@ -62,24 +68,28 @@ public func choose(_ range: CountableRange<Int>) -> Gen<Int> {
   return (Int.init <<< { $0.rounded(.down) } <<< clamp) <¢> choose32BitPosNumber
 }
 
+public func oneOf<A>(_ x: Gen<A>, _ xs: Gen<A>...) -> Gen<A> {
+  return oneOf <| x >| xs
+}
+
 public func oneOf<A>(_ xs: NonEmptyArray<Gen<A>>) -> Gen<A> {
   let (head, tail) = xs |> uncons
   return choose(0..<tail.endIndex) >>- { $0 == 0 ? head : tail[$0 - 1] }
 }
 
-public func arrayOf<A>(_ gen: Gen<A>) -> Gen<[A]> {
+public func array<A>(of gen: Gen<A>) -> Gen<[A]> {
   return sized { n in
     choose(0..<n)
-      .flatMap { k in vectorOf(k) <| gen }
+      .flatMap { k in vector(of: k) <| gen }
   }
 }
 
-public func arrayOf1<A>(_ gen: Gen<A>) -> Gen<NonEmptyArray<A>> {
+public func nonEmptyArray<A>(of gen: Gen<A>) -> Gen<NonEmptyArray<A>> {
   return sized { n in
     choose(0..<n)
       .flatMap { k in
         gen.flatMap { x in
-          (vectorOf(k - 1) <| gen).flatMap { xs in
+          (vector(of: k - 1) <| gen).flatMap { xs in
             pure(x >| xs)
           }
         }
@@ -87,7 +97,7 @@ public func arrayOf1<A>(_ gen: Gen<A>) -> Gen<NonEmptyArray<A>> {
   }
 }
 
-public func vectorOf<A>(_ size: Int) -> (Gen<A>) -> Gen<[A]> {
+public func vector<A>(of size: Int) -> (Gen<A>) -> Gen<[A]> {
   return { gen in
     .init { state in
       let maxSize = max(0, size)
@@ -104,6 +114,10 @@ public func vectorOf<A>(_ size: Int) -> (Gen<A>) -> Gen<[A]> {
   }
 }
 
+public func elements<A>(_ x: A, _ xs: A...) -> Gen<A> {
+  return elements <| x >| xs
+}
+
 public func elements<A>(_ xs: NonEmptyArray<A>) -> Gen<A> {
   let (head, tail) = xs |> uncons
   return choose(0..<tail.endIndex)
@@ -111,7 +125,7 @@ public func elements<A>(_ xs: NonEmptyArray<A>) -> Gen<A> {
 }
 
 public func shuffle<A>(_ xs: [A]) -> Gen<[A]> {
-  return (vectorOf(xs.count) <| choose(0..<Int.max))
+  return (vector(of: xs.count) <| choose(0..<Int.max))
     .map { ns in zip(ns, xs).sorted(by: { $0.0 < $1.0 }).map(second) }
 }
 
@@ -143,11 +157,11 @@ public let genDouble = uniform
 
 public let genInt = choose(-1_000_000..<1_000_000)
 
-public let genString = arrayOf(genCharacter).map { String($0) }
+public let genString = array(of: genCharacter).map { String($0) }
 
 public let genUnit: Gen<Unit> = pure(unit)
 
-public func optionalOf<A>(_ gen: Gen<A>) -> Gen<A?> {
+public func optional<A>(of gen: Gen<A>) -> Gen<A?> {
   return uniform
     .flatMap { $0 < 0.75
       ? gen.map(Optional.some)
@@ -155,10 +169,10 @@ public func optionalOf<A>(_ gen: Gen<A>) -> Gen<A?> {
   }
 }
 
-public func tupleOf<A, B>(_ a: Gen<A>, _ b: Gen<B>) -> Gen<(A, B)> {
+public func tuple<A, B>(of a: Gen<A>, and b: Gen<B>) -> Gen<(A, B)> {
   return { a in { b in (a, b) } } <¢> a <*> b
 }
 
-public func eitherOf<L, R>(_ l: Gen<L>, or r: Gen<R>) -> Gen<Either<L, R>> {
+public func either<L, R>(of l: Gen<L>, or r: Gen<R>) -> Gen<Either<L, R>> {
   return choose(l.map(Either.left), r.map(Either.right))
 }

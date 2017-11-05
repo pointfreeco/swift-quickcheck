@@ -9,7 +9,7 @@ let package = Package(
     .library(name: "LCG", targets: ["LCG"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("2778d80")),
+    .package(url: "https://github.com/pointfreeco/swift-prelude.git", .revision("b23463e")),
   ],
   targets: [
     .target(
