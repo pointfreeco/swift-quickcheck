@@ -1,5 +1,6 @@
 import LCG
 import Prelude
+import State
 
 private let genInt8 = Int8.init <¢> choose(Int(Int8.min)..<Int(Int8.max))
 private let genInt16 = Int16.init <¢> choose(Int(Int16.min)..<Int(Int16.max))
